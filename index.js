@@ -122,7 +122,8 @@ Metazoa.Description = class {
     engines = [];
 
     constructor(d, e) {
-
+        this.text = d;
+        this.engines = [e];
     }
 
     addEngine(e) {
@@ -156,7 +157,6 @@ Metazoa.Result = class {
         if (!/^[a-z0-9-]+$/i.test(e)) {
             throw new Error("Metazoa.Result.addEngine: Invalid input: engine must contain only alphanumeric characters and hyphens.");
         }
-        for (let en of this.engines) { if (en[0] === e && en[1] === i) return; }
         this.engines[e] = i;
     }
 
@@ -167,17 +167,17 @@ Metazoa.Result = class {
             this.descriptor = e;
         }
         if (!this.extras.descriptions) {
-            this.extras.descriptions = [{ text: d, engines: [e] }];
+            this.extras.descriptions = [new Metazoa.Description(d, e)];
             return;
         }
         let exists = false;
         this.extras.descriptions.forEach(r => {
-            if (r.match(d)) {
-                r.engines.push(e);
+            if (r.text.match(d)) {
+                r.addEngine(e);
                 exists = true;
             }
         });
-        if (!exists) this.extras.descriptions.push({ text: d, engines: [e] })
+        if (!exists) this.extras.descriptions.push(new Metazoa.Description(d, e))
     }
 
     build() {
@@ -186,12 +186,10 @@ Metazoa.Result = class {
 }
 
 Metazoa.TextResult = class extends Metazoa.Result {
-    description;
 
-    constructor(href, title, description, icon) {
+    constructor(href, title, icon) {
         super(href,title,icon);
         const qsan = Metazoa.quickSanitize;
-        this.addDescription(description);
     }
 
     build() {
@@ -356,7 +354,8 @@ Metazoa.GoogleParser = class extends Metazoa.EngineParser {
                 const href = divs.find("a:has(h3)").attr("href");
                 const dsc = divs.find(".VwiC3b").text();
 
-                const tr = new Metazoa.TextResult(href, ttl, dsc);
+                const tr = new Metazoa.TextResult(href, ttl);
+                tr.addDescription(dsc, this.engineName);
                 tr.addEngine(this.engineName, ++i);
                 r.push(tr);
             });
@@ -384,7 +383,8 @@ Metazoa.GoogleParser = class extends Metazoa.EngineParser {
                 const ttl = a.find("h3").text().trim();
                 const dsc = $(el).next().text().trim();
 
-                const tr = new Metazoa.TextResult(href, ttl, dsc);
+                const tr = new Metazoa.TextResult(href, ttl);
+                tr.addDescription(dsc, this.engineName);
                 tr.addEngine(this.engineName, ++i);
                 r.push(tr);
                 //console.log(tr);
@@ -445,7 +445,8 @@ Metazoa.DdgParser = class extends Metazoa.EngineParser {
             const dsc = a.closest("tr").next().text().trim();
             const ttl = a.text().trim();
 
-            const tr = new Metazoa.TextResult(href, ttl, dsc);
+            const tr = new Metazoa.TextResult(href, ttl);
+            tr.addDescription(dsc, this.engineName);
             tr.addEngine("ddg", ++i);
             r.push(tr);
         });
@@ -474,7 +475,8 @@ Metazoa.BingParser = class extends Metazoa.EngineParser {
                 const href = a.attr("href");
                 const ttl = a.text().trim();
 
-                const tr = new Metazoa.TextResult(href, ttl, dsc);
+                const tr = new Metazoa.TextResult(href, ttl);
+                tr.addDescription(dsc, this.engineName);
                 tr.addEngine(this.engineName, ++i);
                 r.push(tr);
             }
