@@ -1,4 +1,4 @@
-const Metazoa = require("../index.js");
+const Metazoa = require("./index.js");
 
 function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
     const regex = new RegExp(`(.{1,${maxCharsPerLine}})(\\s|$)`, 'g');
