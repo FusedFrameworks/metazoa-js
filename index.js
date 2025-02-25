@@ -172,7 +172,15 @@ Metazoa.Result = class {
         }
         let exists = false;
         this.extras.descriptions.forEach(r => {
-            if (r.text.match(d)) {
+            const   regex = /[^a-z0-9]/ig,
+                    m1 = r.text.replaceAll(regex,''),
+                    m2 = d.replaceAll(regex,'');
+            if (m1.startsWith(m2)) {
+                r.addEngine(e);
+                exists = true;
+            }
+            if (m2.startsWith(m1)) {
+                r.text = d;
                 r.addEngine(e);
                 exists = true;
             }
