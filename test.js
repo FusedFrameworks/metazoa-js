@@ -1,4 +1,5 @@
 const Metazoa = require("./index.js");
+const filterBadware = require("./filterBadware.js");
 
 function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
     const regex = new RegExp(`(.{1,${maxCharsPerLine}})(\\s|$)`, 'g');
@@ -32,6 +33,9 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
                 case "--images":
                     queries.test = "images";
                     break;
+                case "--badware":
+                    queries.test = "badware";
+                    break;
                 case "--refresh":
                     queries.refresh = 1;
                     break;
@@ -47,11 +51,16 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
     }
 
     switch(queries.test) {
+        case "badware":
+            console.log(`${queries.q} is ${filterBadware(queries.q,"./badware.txt")?"BADWARE":"NOT badware"}`);
+            break;
         case "images":
-            const i = [
-                //(await new Metazoa.GoogleParser().getImages(queries)).parse(),
+            const i = Metazoa.combineResults([
+                (await new Metazoa.GoogleParser().getImages(queries)).parse(),
                 (await new Metazoa.BingParser().getImages(queries)).parse()
-            ];
+            ], {
+                descriptions: false
+            });
             console.log(i);
             break;
         case "suggest":

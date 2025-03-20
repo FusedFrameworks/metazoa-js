@@ -1,6 +1,7 @@
 const fs = require("fs");
 const cheerio = require("cheerio");
 require('dotenv').config();
+const filterBadware = require("./filterBadware.js");
 
 class Metazoa {
     static CACHE_LOCATION = process.env.CACHE_LOCATION || "./cache";
@@ -28,6 +29,7 @@ class Metazoa {
                 return defaultFavicon;
             }
         }
+        // !TODO: Multiple options for icon source
         return `https://icons.duckduckgo.com/ip3/${domain}.ico`;
     }
 
@@ -57,27 +59,32 @@ class Metazoa {
 
     static validateUrl(href) {
         try {
-            const nhref = this.quickSanitize(href.trim()).replace(/^http(s|):\/\//, "https://");
+            let nhref = this.quickSanitize(href.trim()).replace(/^http(s|):\/\//, "https://");
             return new URL(nhref.startsWith("https://") ? nhref : "https://"+nhref);
         } catch (e) {
-            console.error("Metazoa.validateURL: Invalid URL:", href);
-            throw new Error("Metazoa.validateURL: Invalid URL provided.");
+            console.error("Metazoa.validateURL: Invalid URL:", href,"\nError:",e);
         }
     }
     
-    static combineResults(resArr) {
+    static combineResults(resArr, ext) {
         const combMap = new Map();
         resArr.forEach(r => {
             r.forEach(tr => {
                 const { href, engines } = tr;
                 if (!combMap.has(href)) {
+                    if (filterBadware(href,"./badware.txt")) {
+                        console.warn("Metazoa.combineResults: BADWARE FOUND FILTERED:",href,"result provided by",Object.keys(engines).join(","));
+                        return;
+                    }
                     combMap.set(href, tr);
                 }
                 const cr = combMap.get(href);
-                cr.addDescription(tr.description, tr.descriptor);
+                if (tr === cr) return;
+                if (ext?.descriptions !== false) cr.addDescription(tr.description, tr.descriptor);
                 Object.entries(engines).forEach((e, i) => {
                     cr.addEngine(e, i);
                 }); 
+                console.log(cr,tr);
             });
         });
 
@@ -333,11 +340,12 @@ Metazoa.GoogleParser = class extends Metazoa.EngineParser {
         const $ = cheerio.load(htm);
 
         // BREAKS CACHING AND USERAGENT
+        // this is testing code
         (async () => {
         const queries = {};
         const fa = $("a");
         if (fa.text().match(/click here/i)) {
-            console.log("bingus found!");
+            console.log("\"Click here\" found, unfortunately");
             queries.recache = queries.recache ?? 1;
             queries.q = fa.prop("href").replace("/search?q=", "");
             htm = (await this.getText(queries)).html;
@@ -526,7 +534,7 @@ Metazoa.BraveParser = class extends Metazoa.EngineParser {
             const s = [];
             d[1].forEach(r => {
                 s.push([r.q, [this.engineName], {
-                    // !Extra content provided by engine
+                    // !TODO: Extra content provided by engine
                 }]);
             });
             return s;
