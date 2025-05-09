@@ -1,4 +1,5 @@
-const security = require("./security/security.js");
+const security = require("../security/security.js");
+const { findFavicon } = require("../services/services.js");
 
 class Description {
     text = "";
@@ -29,7 +30,7 @@ class Article {
         const url = security.validateUrl(href);
         this.href = url.href;
        
-        this.icon = !icon?.length ? Metazoa.getIcon(url.hostname) : qsan(icon);
+        this.icon = !icon?.length ? findFavicon(url.hostname) : qsan(icon);
         this.title = qsan(title.trim());
     }
 
@@ -117,4 +118,10 @@ class ImageArticle extends Article {
         const qsan = security.quickSanitize;
         this.src = qsan(src);
     }
+}
+
+module.exports = {
+    Article,
+    TextArticle,
+    ImageArticle
 }

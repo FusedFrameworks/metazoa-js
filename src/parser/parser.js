@@ -1,6 +1,6 @@
 const fs = require("fs");
 const cheerio = require("cheerio");
-const Metazoa = require("../index.js");
+const ifc = require("../interfaces/interfaces.js");
 
 EngineParser = class {
     engineName;
@@ -15,7 +15,8 @@ EngineParser = class {
         }
         const q = encodeURIComponent(queries["q"].toLowerCase());
         
-        const cacheFile = `${Metazoa.CACHE_LOCATION}/${this.engineName}-${queries.images?'images':'articles'}-${q}`;
+        //const cacheFile = `${Metazoa.CACHE_LOCATION}/${this.engineName}-${queries.images?'images':'articles'}-${q}`;
+        const cacheFile = `./cache/${this.engineName}-${queries.images?'images':'articles'}-${q}`;
 
 
         return new Promise(async (resolve, reject) => {
@@ -128,7 +129,7 @@ GoogleParser = class extends EngineParser {
                 const href = divs.find("a:has(h3)").attr("href");
                 const dsc = divs.find(".VwiC3b").text();
 
-                const tr = new Metazoa.TextResult(href, ttl);
+                const tr = new ifc.TextArticle(href, ttl);
                 tr.addDescription(dsc, this.engineName);
                 tr.addEngine(this.engineName, ++i);
                 r.push(tr);
@@ -157,7 +158,7 @@ GoogleParser = class extends EngineParser {
                 const ttl = a.find("h3").text().trim();
                 const dsc = $(el).next().text().trim();
 
-                const tr = new Metazoa.TextResult(href, ttl);
+                const tr = new ifc.TextArticle(href, ttl);
                 tr.addDescription(dsc, this.engineName);
                 tr.addEngine(this.engineName, ++i);
                 r.push(tr);
@@ -186,7 +187,7 @@ GoogleParser = class extends EngineParser {
             let href = t.find("a:has(img)").attr("href");
             if (!href.startsWith("/url?q=")) return;
             href = decodeURIComponent(href.substring(7, href.indexOf("&sa=")));
-            const ir = new Metazoa.ImageResult(href, ttl, src);
+            const ir = new ifc.ImageArticle(href, ttl, src);
             ir.addEngine(this.engineName, ++i);
             r.push(ir);
         });
@@ -219,7 +220,7 @@ DdgParser = class extends EngineParser {
             const dsc = a.closest("tr").next().text().trim();
             const ttl = a.text().trim();
 
-            const tr = new Metazoa.TextResult(href, ttl);
+            const tr = new ifc.TextArticle(href, ttl);
             tr.addDescription(dsc, this.engineName);
             tr.addEngine("ddg", ++i);
             r.push(tr);
@@ -249,7 +250,7 @@ BingParser = class extends EngineParser {
                 const href = a.attr("href");
                 const ttl = a.text().trim();
 
-                const tr = new Metazoa.TextResult(href, ttl);
+                const tr = new ifc.TextArticle(href, ttl);
                 tr.addDescription(dsc, this.engineName);
                 tr.addEngine(this.engineName, ++i);
                 r.push(tr);
@@ -272,7 +273,7 @@ BingParser = class extends EngineParser {
 
             if (!src.startsWith("http")) return;
 
-            const ir = new Metazoa.ImageResult(href, ttl, src);
+            const ir = new ifc.ImageArticle(href, ttl, src);
             ir.addEngine(this.engineName, ++i);
             r.push(ir);
         });

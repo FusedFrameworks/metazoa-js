@@ -11,9 +11,17 @@ require('dotenv').config();
 class Metazoa {
     static CACHE_LOCATION = process.env.CACHE_LOCATION || "./cache";
 
+    static interfaces = interfaces;
     static parsers = engineParsers;
-   
+    static mapper = mapper;
     
+    static createTextArticle() {
+        return new interfaces.TextArticle(...arguments) ;
+    }
+
+    static createImageArticle() {
+        return new interfaces.ImageArticle(...arguments) ;
+    }
 }
 
 

@@ -33,5 +33,5 @@ function proxyImage(src) {
 
 module.exports = {
     findFavicon,
-    proxyIcon
+    proxyImage
 } 
