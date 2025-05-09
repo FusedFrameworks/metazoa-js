@@ -1,4 +1,4 @@
-const Metazoa = require("../index.js");
+const Metazoa = require("./index.js");
 
 function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
     const regex = new RegExp(`(.{1,${maxCharsPerLine}})(\\s|$)`, 'g');
@@ -49,16 +49,16 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
     switch(queries.test) {
         case "images":
             const i = [
-                //(await new Metazoa.GoogleParser().getImages(queries)).parse(),
-                (await new Metazoa.BingParser().getImages(queries)).parse()
+                //(await new Metazoa.parsers.GoogleParser().getImages(queries)).parse(),
+                (await new Metazoa.parsers.BingParser().getImages(queries)).parse()
             ];
             console.log(i);
             break;
         case "suggest":
             const s = Metazoa.combineSuggestions([
-                await new Metazoa.GoogleParser().getSuggestions(queries.q),
-                await new Metazoa.DdgParser().getSuggestions(queries.q),
-                await new Metazoa.BraveParser().getSuggestions(queries.q)
+                await new Metazoa.parsers.GoogleParser().getSuggestions(queries.q),
+                await new Metazoa.parsers.DdgParser().getSuggestions(queries.q),
+                await new Metazoa.parsers.BraveParser().getSuggestions(queries.q)
             ]);
             console.log("\n");
             s.forEach(r => {
@@ -70,9 +70,9 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
             break;
         default:
             const r = Metazoa.combineResults([
-                (await new Metazoa.GoogleParser().getText(queries)).parse(),
-                (await new Metazoa.BingParser().getText(queries)).parse(),
-                (await new Metazoa.DdgParser().getText(queries)).parse(),
+                (await new Metazoa.parsers.GoogleParser().getText(queries)).parse(),
+                (await new Metazoa.parsers.BingParser().getText(queries)).parse(),
+                (await new Metazoa.parsers.DdgParser().getText(queries)).parse(),
             ]);
             const mpad = (r.length-1).toString().length;
             const margin = 3;
