@@ -62,7 +62,9 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
             ]);
             console.log("\n");
             s.forEach(r => {
-                const enginesText = `(${r[1].join(", ")})`;
+                //const engie = Object.entries(r[1]).map(e => `[${e[0].charAt(0).toUpperCase()}${e[1]}]`).join(' - ');
+                //const enginesText = `(${r[1].join(", ")})`;
+                const enginesText = r[1].map(e => `${e.charAt(0)}${e.charAt(e.length-1)}`).join(", ");
                 const pad = 70 - (r[0].length + enginesText.length);
                 console.log(`  ${r[0]} ${' '.repeat(pad)} ${enginesText}`);
             });
