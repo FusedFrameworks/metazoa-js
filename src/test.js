@@ -57,16 +57,19 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
         case "suggest":
             const s = Metazoa.mapper.combineSuggestions([
                 await new Metazoa.parsers.GoogleParser().getSuggestions(queries.q),
-                await new Metazoa.parsers.DdgParser().getSuggestions(queries.q),
+                await new Metazoa.parsers.DuckParser().getSuggestions(queries.q),
+                await new Metazoa.parsers.BingParser().getSuggestions(queries.q),
                 await new Metazoa.parsers.BraveParser().getSuggestions(queries.q)
             ]);
             console.log("\n");
+            const leftBoxWidth = 70;
+            console.log(` Query:${" ".repeat(leftBoxWidth-20)}Engines:${" ".repeat(15)}Placment:`)
             s.forEach(r => {
                 //const engie = Object.entries(r[1]).map(e => `[${e[0].charAt(0).toUpperCase()}${e[1]}]`).join(' - ');
                 //const enginesText = `(${r[1].join(", ")})`;
-                const enginesText = r[1].map(e => `${e.charAt(0)}${e.charAt(e.length-1)}`).join(", ");
-                const pad = 70 - (r[0].length + enginesText.length);
-                console.log(`  ${r[0]} ${' '.repeat(pad)} ${enginesText}`);
+                const enginesText = r.e.map(en => `${en.short}-${en.place}`).join(", ");
+                const pad = leftBoxWidth - (r.q.length + enginesText.length);
+                console.log(`  ${r.q} ${' '.repeat(pad)} ${enginesText}       ${r.p}${" ".repeat(11-r.p.toString().length)}`);
             });
             console.log("\n");
             break;
@@ -74,7 +77,7 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
             const r = Metazoa.mapper.combineArticles([
                 (await new Metazoa.parsers.GoogleParser().getText(queries)).parse(),
                 (await new Metazoa.parsers.BingParser().getText(queries)).parse(),
-                (await new Metazoa.parsers.DdgParser().getText(queries)).parse(),
+                (await new Metazoa.parsers.DuckParser().getText(queries)).parse(),
             ]);
             const mpad = (r.length-1).toString().length;
             const margin = 3;
