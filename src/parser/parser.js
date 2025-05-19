@@ -78,9 +78,19 @@ EngineParser = class {
         return fetch(this.suggestUri.replace("%s", q)).then(d => d.json())
         .then(d => {
             const s = [];
-            d[1].forEach(r => {
-                s.push([r, [this.engineName]]);
-            });
+            for (const i in d[1]) {
+                if (d[1][i] === q) {
+                    console.log(`Metazoa.EngineParser.getSuggestions: Suggestion ${i} from ${this.engineName} same as input "${q}". Omitting`);
+                    continue;
+                }
+                s.push({
+                    q: d[1][i],
+                    e: [ { name: this.engineName, short: this.shortName, place: i } ],
+                    extras: {
+                        // TODO: Brave had extra content in suggestions, like descriptions/images
+                    }
+                });
+            }
             return s;
         });
     }
@@ -92,6 +102,7 @@ EngineParser = class {
 
 GoogleParser = class extends EngineParser {
     engineName = "google";
+    shortName = "GG";
     searchUri = "https://www.google.com/search?q=%s";
     imageSearchUri = "https://www.google.com/search?tbm=isch&q=%s";
     suggestUri = "http://suggestqueries.google.com/complete/search?output=firefox&q=%s";
@@ -195,8 +206,9 @@ GoogleParser = class extends EngineParser {
     }
 };
 
-DdgParser = class extends EngineParser {
-    engineName = "ddg";
+DuckParser = class extends EngineParser {
+    engineName = "duckduckgo";
+    shortName = "DG"
     searchUri = "https://lite.duckduckgo.com/lite/?q=%s";
     imageSearchUri = "https://duckduckgo.com/?q=%s&iax=images&ia=images";
     suggestUri = "https://duckduckgo.com/ac/?q=%s&type=list";
@@ -205,7 +217,7 @@ DdgParser = class extends EngineParser {
         const $ = cheerio.load(htm);
         const fel = $(".filters");
         if (!fel) {
-            console.error("Metazoa.DdgParser: Could not find expected '.filters' element.");
+            console.error("Metazoa.DuckParser: Could not find expected '.filters' element.");
             return [];
         }
 
@@ -222,7 +234,7 @@ DdgParser = class extends EngineParser {
 
             const tr = new ifc.TextArticle(href, ttl);
             tr.addDescription(dsc, this.engineName);
-            tr.addEngine("ddg", ++i);
+            tr.addEngine("duckduckgo", ++i);
             r.push(tr);
         });
 
@@ -232,6 +244,7 @@ DdgParser = class extends EngineParser {
 
 BingParser = class extends EngineParser {
     engineName = "bing";
+    shortName = "BN";
     searchUri = "https://www.bing.com/search?q=%s";
     imageSearchUri="https://www.bing.com/images/search?q=%s&form=HDRSC3&first=1"
 
@@ -279,10 +292,51 @@ BingParser = class extends EngineParser {
         });
         return r;
     }
+
+    genCVID() {
+        return 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/[x]/g, () =>
+            Math.floor(Math.random() * 16).toString(16).toUpperCase()
+        );
+    }
+
+    genSuggestUri(q, cp = q.length-1, cvid = this.cvid) {
+        return `https://www.bing.com/AS/Suggestions?pt=page.home&qry=${q}&cp={cp}&csr=1&msbqf=false&pths=2&cvid=${cvid}`;
+    }
+
+    getSuggestions(q) {
+        console.log(`Metazoa.BingParser.getSuggestions: Fetching suggestions from ${this.engineName} for: "${q}"`);
+        // Bing telemetry, unfortunately it's necessary.
+        // I do believe CVID stands for "Client Visitor ID"
+        // And it should be able to be regenerated at will.
+        if (!this.cvid) this.cvid = this.genCVID();
+        return fetch(this.genSuggestUri(q)).then(d => d.json())
+        .then(dat => {
+            const d = dat.s;
+            const s = [];
+            for (const i in d) {
+                // Remove non-ascii characters, for now.
+                // We will need to preserve multi-lang support in the future.
+                const cq = d[i].q.replace(/[^\x20-\x7E]/g, '');
+                if (d[i].q === q) {
+                    console.log(`Metazoa.BingParser.getSuggestions: Suggestion ${i} from ${this.engineName} same as input "${q}". Omitting`);
+                    continue;
+                }
+                s.push({
+                    q: cq,
+                    e: [ { name: this.engineName, short: this.shortName, place: i } ],
+                    ext: {
+                        // TODO: Bing has extra content in suggestions, like descriptions/imagees
+                    }
+                });
+            }
+            return s;
+        });
+    }
 };
 
 BraveParser = class extends EngineParser {
     engineName = "brave";
+    shortName = "BV"
     searchUri = "";
     suggestUri = "https://search.brave.com/api/suggest?q=%s&rich=true&source=web";
 
@@ -291,11 +345,19 @@ BraveParser = class extends EngineParser {
         return fetch(this.suggestUri.replace("%s", q)).then(d => d.json())
         .then(d => {
             const s = [];
-            d[1].forEach(r => {
-                s.push([r.q, [this.engineName], {
-                    // !Extra content provided by engine
-                }]);
-            });
+            for (const i in d[1]) {
+                if (d[1][i].q === q) {
+                    console.log(`Metazoa.BraveParser.getSuggestions: Suggestion ${i} from ${this.engineName} same as input "${q}". Omitting`);
+                    continue;
+                }
+                s.push({
+                    q: d[1][i].q,
+                    e: [ { name: this.engineName, short: this.shortName, place: i } ],
+                    ext: {
+                        // TODO: Brave has extra content in suggestions, like descriptions/images
+                    }
+                });
+            }
             return s;
         });
     }
@@ -305,6 +367,6 @@ module.exports = {
     EngineParser,
     GoogleParser,
     BraveParser,
-    DdgParser,
+    DuckParser,
     BingParser
 }
