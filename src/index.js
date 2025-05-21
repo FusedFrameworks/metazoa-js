@@ -3,7 +3,6 @@
 const filters = require("./filter/filter.js");
 const interfaces = require("./interfaces/interfaces.js");
 const mapper = require("./mapper/mapper.js");
-const engineParsers = require("./parser/parser.js");
 const security = require("./security/security.js");
 const services = require("./services/services.js");
 require('dotenv').config();
@@ -12,7 +11,12 @@ class Metazoa {
     static CACHE_LOCATION = process.env.CACHE_LOCATION || "./cache";
 
     static interfaces = interfaces;
-    static parsers = engineParsers;
+    static parsers = {
+        GoogleParser: require("./parser/google.js"),
+        BraveParser:  require("./parser/brave.js"),
+        DuckParser:   require("./parser/duck.js"),
+        BingParser:   require("./parser/bing.js")
+    };
     static mapper = mapper;
     
     static createTextArticle() {
@@ -23,6 +27,5 @@ class Metazoa {
         return new interfaces.ImageArticle(...arguments) ;
     }
 }
-
 
 module.exports = Metazoa;
