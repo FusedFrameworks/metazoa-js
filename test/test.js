@@ -1,5 +1,9 @@
+<<<<<<< HEAD:test.js
 const Metazoa = require("./index.js");
 const filterBadware = require("./filterBadware.js");
+=======
+const Metazoa = require("../src/index.js");
+>>>>>>> restructure:test/test.js
 
 function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
     const regex = new RegExp(`(.{1,${maxCharsPerLine}})(\\s|$)`, 'g');
@@ -55,33 +59,40 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
             console.log(`${queries.q} is ${filterBadware(queries.q,"./badware.txt")?"BADWARE":"NOT badware"}`);
             break;
         case "images":
+<<<<<<< HEAD:test.js
             const i = Metazoa.combineResults([
                 (await new Metazoa.GoogleParser().getImages(queries)).parse(),
                 (await new Metazoa.BingParser().getImages(queries)).parse()
             ], {
                 descriptions: false
             });
+=======
+            const i = [
+                //(await new Metazoa.parsers.GoogleParser().getImages(queries)).parse(),
+                (await new Metazoa.parsers.BingParser().getImages(queries)).parse()
+            ];
+>>>>>>> restructure:test/test.js
             console.log(i);
             break;
         case "suggest":
-            const s = Metazoa.combineSuggestions([
-                await new Metazoa.GoogleParser().getSuggestions(queries.q),
-                await new Metazoa.DdgParser().getSuggestions(queries.q),
-                await new Metazoa.BraveParser().getSuggestions(queries.q)
-            ]);
+            const s = await new Metazoa.Suggest().get(queries.q);
             console.log("\n");
+            const leftBoxWidth = 70;
+            console.log(` Query:${" ".repeat(leftBoxWidth-20)}Engines:${" ".repeat(15)}Placment:`)
             s.forEach(r => {
-                const enginesText = `(${r[1].join(", ")})`;
-                const pad = 70 - (r[0].length + enginesText.length);
-                console.log(`  ${r[0]} ${' '.repeat(pad)} ${enginesText}`);
+                //const engie = Object.entries(r[1]).map(e => `[${e[0].charAt(0).toUpperCase()}${e[1]}]`).join(' - ');
+                //const enginesText = `(${r[1].join(", ")})`;
+                const enginesText = r.e.map(en => `${en.short}-${en.place}`).join(", ");
+                const pad = leftBoxWidth - (r.q.length + enginesText.length);
+                console.log(`  ${r.q} ${' '.repeat(pad)} ${enginesText}       ${r.p}${" ".repeat(11-r.p.toString().length)}`);
             });
             console.log("\n");
             break;
         default:
-            const r = Metazoa.combineResults([
-                (await new Metazoa.GoogleParser().getText(queries)).parse(),
-                (await new Metazoa.BingParser().getText(queries)).parse(),
-                (await new Metazoa.DdgParser().getText(queries)).parse(),
+            const r = Metazoa.mapper.combineArticles([
+                (await new Metazoa.parsers.GoogleParser().getText(queries)).parse(),
+                (await new Metazoa.parsers.BingParser().getText(queries)).parse(),
+                (await new Metazoa.parsers.DuckParser().getText(queries)).parse(),
             ]);
             const mpad = (r.length-1).toString().length;
             const margin = 3;
