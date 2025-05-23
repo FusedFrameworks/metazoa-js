@@ -25,7 +25,7 @@ function combineArticles(resArr) {
     return combArr;
 }
 
-function combineSuggestions(sugArr) {
+function combineSuggestions(sugArr, weights) {
     const comb = new Map();
     sugArr.forEach(s => {
         s.forEach(r => {
@@ -47,7 +47,7 @@ function combineSuggestions(sugArr) {
         
         // Remove a single outlier if it skews the average significantly
         let filteredPlaces = [...places];
-        if (places.length >= 4) {
+        if ((weights?.removeOutlier ?? true) && places.length >= 4) {
             const mean = places.reduce((a, b) => a + b, 0) / places.length;
             const stdev = Math.sqrt(places.map(p => Math.pow(p - mean, 2)).reduce((a, b) => a + b, 0) / places.length);
         
@@ -57,14 +57,14 @@ function combineSuggestions(sugArr) {
             }
         }
         
-        const avgPlace = 1 + filteredPlaces.reduce((o, c) => o + c, 0) / filteredPlaces.length;
+        const avgPlace = (1 + filteredPlaces.reduce((o, c) => o + c, 0) / filteredPlaces.length) * (weights?.avg ?? 1);
         
         const appearanceBias = s.e.length < 2 
             ? -1  // penalize less appearances
-            : (s.e.length - 2) * 0.2;  // slight boost beyond 2
+            : (s.e.length - 1) * (weights?.appearance ?? 0.4);  // boost when more than 1 engines
         
-        const lengthBias = Math.exp(-Math.pow(s.q.length - 15, 2) / (2 * Math.pow(5, 2))) * 0.2;
-        
+        const lengthBias = Math.exp(-Math.pow(s.q.length - 15, 2) / (2 * Math.pow(5, 2))) * (weights?.length ?? 0.2);
+
         s.p = parseFloat((avgPlace - appearanceBias - lengthBias).toFixed(2));
     });
     sort.sort((a,b) => a.p - b.p);

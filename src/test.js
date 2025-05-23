@@ -55,12 +55,7 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
             console.log(i);
             break;
         case "suggest":
-            const s = Metazoa.mapper.combineSuggestions([
-                await new Metazoa.parsers.GoogleParser().getSuggestions(queries.q),
-                await new Metazoa.parsers.DuckParser().getSuggestions(queries.q),
-                await new Metazoa.parsers.BingParser().getSuggestions(queries.q),
-                await new Metazoa.parsers.BraveParser().getSuggestions(queries.q)
-            ]);
+            const s = await new Metazoa.Suggest().get(queries.q);
             console.log("\n");
             const leftBoxWidth = 70;
             console.log(` Query:${" ".repeat(leftBoxWidth-20)}Engines:${" ".repeat(15)}Placment:`)
