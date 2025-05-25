@@ -10,7 +10,7 @@ This is a metasearch library, a "bang" engine (like DDG's !google). Another feat
 - [x] Basic search suggestions
 - [ ] DB indexing (cache)
 - [ ] Bangs
-    - [ ] Legacy DuckDuckGo Bangs
+    - [ ] DuckDuckGo Bangs
     - [ ] Extended Bangs
     - [ ] Bang overrides
 - [ ] Filters
