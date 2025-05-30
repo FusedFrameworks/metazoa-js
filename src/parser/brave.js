@@ -5,8 +5,15 @@ const EngineParser = require("./general.js");
 BraveParser = class extends EngineParser {
     engineName = "brave";
     shortName = "BV"
-    searchUri = "";
     suggestUri = "https://search.brave.com/api/suggest?q=%s&rich=true&source=web";
+    static features = [
+        "suggest"
+    ];
+
+    constructor() {
+        super();
+        this.features = BraveParser.features;
+    }
 
     getSuggestions(q) {
         console.log(`Metazoa.BraveParser.getSuggestions: Fetching suggestions from ${this.engineName} for: "${q}"`);

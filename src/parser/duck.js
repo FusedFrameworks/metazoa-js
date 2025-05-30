@@ -8,6 +8,15 @@ DuckParser = class extends EngineParser {
     searchUri = "https://lite.duckduckgo.com/lite/?q=%s";
     imageSearchUri = "https://duckduckgo.com/?q=%s&iax=images&ia=images";
     suggestUri = "https://duckduckgo.com/ac/?q=%s&type=list";
+    static features = [
+        "text",
+        "suggest"
+    ];
+
+    constructor() {
+        super();
+        this.features = DuckParser.features;
+    }
 
     parseText(htm) {
         const $ = cheerio.load(htm);

@@ -1,12 +1,21 @@
 const cheerio = require("cheerio");
 const ifc = require("../interfaces/interfaces.js");
-const EngineParser = require("./general.js");
 
 BingParser = class extends EngineParser {
     engineName = "bing";
     shortName = "BN";
     searchUri = "https://www.bing.com/search?q=%s";
     imageSearchUri="https://www.bing.com/images/search?q=%s&form=HDRSC3&first=1"
+    static features = [
+        "text",
+        "image",
+        "suggest"
+    ];
+        
+    constructor() {
+        super();
+        this.features = BingParser.features;
+    }
 
     parseText(htm) {
         const $ = cheerio.load(htm);

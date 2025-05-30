@@ -26,39 +26,61 @@ class Metazoa {
     static createImageArticle() {
         return new interfaces.ImageArticle(...arguments) ;
     }
-
-    
-
-    
 }
 
-Metazoa.Search = class {
-    constructor() {
-    }
-
-    get(q) {
+class SearchHelper {
+    constructor(engineNames, weights) {
+        if (typeof engineNames !== "object") { throw new Error`Metazoa.${this.constructor.name}: Type error: engines is not of type 'object'. Should be an array of exact names`; }
+        this.engines = (names => {
+            if (names.includes("all")) { return Object.entries(Metazoa.parsers).map(p => new p[1]()); }
+            let parsers = [];
+            if (names.includes("google"))     parsers.push(new Metazoa.parsers.GoogleParser());
+            if (names.includes("brave"))      parsers.push(new Metazoa.parsers.BraveParser());
+            if (names.includes("duckduckgo")) parsers.push(new Metazoa.parsers.DuckParser());
+            if (names.includes("bing"))       parsers.push(new Metazoa.parsers.BingParser());
+            for (const feat of [
+                "text",
+                "images",
+                "suggest"
+            ]) {
+                if (names.includes(feat)) {
+                    parsers = parsers.concat(Object.entries(Metazoa.parsers).map(p => {
+                        // console.log(`feature ${feat} found on ${p[0]}`)
+                        if (p[1].features.includes(feat)) return new p[1]();
+                    }))
+                }
+            }
+            return parsers;
+        })(engineNames);
+        this.weights = weights;
     }
 };
 
-Metazoa.Suggest = class {
-        constructor(engines = ["all"], minimal = true, weights) {
-            this.engines = [];
-            if (typeof engines !== "object") { throw new Error`Metazoa.Suggest: Type error: engines is not of type 'object'. Should be an array of exact names`; }
-            if (engines.includes("all")) {
-                this.engines = [
-                    new Metazoa.parsers.GoogleParser(),
-                    new Metazoa.parsers.BraveParser(),
-                    new Metazoa.parsers.DuckParser(),
-                    new Metazoa.parsers.BingParser()
-                ];
-            } else {
-                if (engines.includes("google"))     this.engines.push(new Metazoa.parsers.GoogleParser());
-                if (engines.includes("brave"))      this.engines.push(new Metazoa.parsers.BraveParser());
-                if (engines.includes("duckduckgo")) this.engines.push(new Metazoa.parsers.DuckParser());
-                if (engines.includes("bing"))       this.engines.push(new Metazoa.parsers.BingParser());
-            }
+Metazoa.ImageSearch = class extends SearchHelper {
+
+}
+
+Metazoa.TextSearch = class extends SearchHelper {
+    constructor(engineNames = ["search"], weights) {
+        /* Other options might include:
+         * - complexity (how much information)
+         * - caching
+        */
+        super(engineNames, weights);
+    }
+
+    get(q) {
+        return new Promise(async (resolve, reject) => {
+            const s = Metazoa.mapper.combineArticles(await Promise.all(this.engines.map(async e => (await e.getText(q)).parse())), this.weights);
+            resolve(s);
+        });
+    }
+};
+
+Metazoa.Suggest = class extends SearchHelper {
+        constructor(engineNames = ["suggest"], weights, minimal = true) {
+            super(engineNames, weights);
             this.minimal = minimal;
-            this.weights = weights;
         }
 
        get(q) {

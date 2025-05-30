@@ -1,9 +1,4 @@
-<<<<<<< HEAD:test.js
-const Metazoa = require("./index.js");
-const filterBadware = require("./filterBadware.js");
-=======
 const Metazoa = require("../src/index.js");
->>>>>>> restructure:test/test.js
 
 function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
     const regex = new RegExp(`(.{1,${maxCharsPerLine}})(\\s|$)`, 'g');
@@ -37,9 +32,6 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
                 case "--images":
                     queries.test = "images";
                     break;
-                case "--badware":
-                    queries.test = "badware";
-                    break;
                 case "--refresh":
                     queries.refresh = 1;
                     break;
@@ -55,23 +47,11 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
     }
 
     switch(queries.test) {
-        case "badware":
-            console.log(`${queries.q} is ${filterBadware(queries.q,"./badware.txt")?"BADWARE":"NOT badware"}`);
-            break;
         case "images":
-<<<<<<< HEAD:test.js
-            const i = Metazoa.combineResults([
-                (await new Metazoa.GoogleParser().getImages(queries)).parse(),
-                (await new Metazoa.BingParser().getImages(queries)).parse()
-            ], {
-                descriptions: false
-            });
-=======
             const i = [
                 //(await new Metazoa.parsers.GoogleParser().getImages(queries)).parse(),
                 (await new Metazoa.parsers.BingParser().getImages(queries)).parse()
             ];
->>>>>>> restructure:test/test.js
             console.log(i);
             break;
         case "suggest":
@@ -89,11 +69,7 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
             console.log("\n");
             break;
         default:
-            const r = Metazoa.mapper.combineArticles([
-                (await new Metazoa.parsers.GoogleParser().getText(queries)).parse(),
-                (await new Metazoa.parsers.BingParser().getText(queries)).parse(),
-                (await new Metazoa.parsers.DuckParser().getText(queries)).parse(),
-            ]);
+            const r = await new Metazoa.TextSearch().get(queries);
             const mpad = (r.length-1).toString().length;
             const margin = 3;
             for (let i = r.length-1; i >= 0; i--) {

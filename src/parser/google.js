@@ -8,6 +8,16 @@ GoogleParser = class extends EngineParser {
     searchUri = "https://www.google.com/search?q=%s";
     imageSearchUri = "https://www.google.com/search?tbm=isch&q=%s";
     suggestUri = "http://suggestqueries.google.com/complete/search?output=firefox&q=%s";
+    static features = [
+        "text",
+        "image",
+        "suggest"
+    ];
+
+    constructor() {
+        super();
+        this.features = GoogleParser.features;
+    }
 
     parseText(htm) {
         const $ = cheerio.load(htm);
