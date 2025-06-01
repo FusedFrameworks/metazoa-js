@@ -43,12 +43,17 @@ class SearchHelper {
                 "images",
                 "suggest"
             ]) {
-                if (names.includes(feat)) {
-                    parsers = parsers.concat(Object.entries(Metazoa.parsers).map(p => {
-                        // console.log(`feature ${feat} found on ${p[0]}`)
-                        if (p[1].features.includes(feat)) return new p[1]();
-                    }))
-                }
+                if (!names.includes(feat)) continue;
+                Object.entries(Metazoa.parsers).forEach(p => {
+                    if (p[1].features.includes(feat)) {
+                        //console.log(`feature ${feat} found on ${p[0]}`);
+                        if (parsers.includes(p[1])) {
+                            //console.log(`ignoring ${p[0]} from feat. ${feat}: already in parsers`);
+                            return;
+                        }
+                        parsers.push(new p[1]());
+                    }
+                });
             }
             return parsers;
         })(engineNames);
@@ -61,7 +66,7 @@ Metazoa.ImageSearch = class extends SearchHelper {
 }
 
 Metazoa.TextSearch = class extends SearchHelper {
-    constructor(engineNames = ["search"], weights) {
+    constructor(engineNames = ["text"], weights) {
         /* Other options might include:
          * - complexity (how much information)
          * - caching
@@ -71,7 +76,10 @@ Metazoa.TextSearch = class extends SearchHelper {
 
     get(q) {
         return new Promise(async (resolve, reject) => {
-            const s = Metazoa.mapper.combineArticles(await Promise.all(this.engines.map(async e => (await e.getText(q)).parse())), this.weights);
+            const s = Metazoa.mapper.combineArticles(await Promise.all(this.engines.map(async e => { 
+                //console.log(e)
+                return (await e.getText(q)).parse()
+            })), this.weights);
             resolve(s);
         });
     }
