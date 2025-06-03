@@ -27,7 +27,7 @@ GoogleParser = class extends EngineParser {
         const queries = {};
         const fa = $("a");
         if (fa.text().match(/click here/i)) {
-            console.log("bingus found!");
+            console.log("Redirect found on Google, unfortunately");
             queries.recache = queries.recache ?? 1;
             queries.q = fa.prop("href").replace("/search?q=", "");
             htm = (await this.getText(queries)).html;
@@ -79,7 +79,7 @@ GoogleParser = class extends EngineParser {
                 href = decodeURIComponent(href.substring(7, href.indexOf("&sa=")));
                 
                 const ttl = a.find("h3").text().trim();
-                const dsc = $(el).next().text().trim();
+                const dsc = $(el).text().trim();
 
                 const tr = new ifc.TextArticle(href, ttl);
                 tr.addDescription(dsc, this.engineName);
