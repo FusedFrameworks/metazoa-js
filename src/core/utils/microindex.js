@@ -88,7 +88,7 @@ function combineSuggestions(sugArr, weights) {
     return sort;
 }
 
-module.exports = {
+export {
     combineArticles,
     combineSuggestions
 }

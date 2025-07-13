@@ -1,8 +1,9 @@
-const cheerio = require("cheerio");
-const ifc = require("../interfaces/interfaces.js");
-const security = require("../security/security.js");
+import * as cheerio from "cheerio";
+import ifc from "../../core/interfaces/interfaces.js";
+import * as security from "../../core/utils/security.js";
+import EngineParser from "./generic.js";
 
-BingParser = class extends EngineParser {
+const BingParser = class extends EngineParser {
     engineName = "bing";
     shortName = "BN";
     searchUri = "https://www.bing.com/search?go=Search&q=%s";
@@ -127,4 +128,4 @@ BingParser = class extends EngineParser {
     }
 };
 
-module.exports = BingParser;
+export default BingParser;

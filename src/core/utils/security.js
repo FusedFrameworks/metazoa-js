@@ -24,8 +24,8 @@ function validateUrl(href) {
         throw new Error("Metazoa.validateURL: Invalid URL provided.");
     }
 }
- 
-module.exports = {
+
+export {
     quickSanitize,
     validateUrl
-}
+};

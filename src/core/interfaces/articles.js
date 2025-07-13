@@ -1,5 +1,5 @@
-const security = require("../security/security.js");
-const { findFavicon } = require("../services/services.js");
+import * as security from "../utils/security.js";
+import findFavicon from "../services/favicon.js";
 
 class Description {
     text = "";
@@ -120,7 +120,7 @@ class ImageArticle extends Article {
     }
 }
 
-module.exports = {
+export {
     Article,
     TextArticle,
     ImageArticle

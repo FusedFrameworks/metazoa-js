@@ -1,8 +1,8 @@
-const cheerio = require("cheerio");
-const ifc = require("../interfaces/interfaces.js");
-const EngineParser = require("./general.js");
+import * as cheerio from "cheerio";
+import ifc from "../../core/interfaces/interfaces.js";
+import EngineParser from "./generic.js";
 
-GoogleParser = class extends EngineParser {
+const GoogleParser = class extends EngineParser {
     engineName = "google";
     shortName = "GG";
     searchUri = "https://www.google.com/search?q=%s";
@@ -118,4 +118,4 @@ GoogleParser = class extends EngineParser {
     }
 };
 
-module.exports = GoogleParser;
+export default GoogleParser;

@@ -1,8 +1,8 @@
-const cheerio = require("cheerio");
-const ifc = require("../interfaces/interfaces.js");
-const EngineParser = require("./general.js");
+import * as cheerio from "cheerio";
+import ifc from "../../core/interfaces/interfaces.js";
+import EngineParser from "./generic.js";
 
-BraveParser = class extends EngineParser {
+const BraveParser = class extends EngineParser {
     engineName = "brave";
     shortName = "BV"
     suggestUri = "https://search.brave.com/api/suggest?q=%s&rich=true&source=web";
@@ -38,4 +38,4 @@ BraveParser = class extends EngineParser {
     }
 }
 
-module.exports = BraveParser;
+export default BraveParser;

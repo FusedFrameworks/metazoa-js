@@ -1,8 +1,8 @@
-const cheerio = require("cheerio");
-const ifc = require("../interfaces/interfaces.js"); 
-const EngineParser = require("./general.js");
+import * as cheerio from "cheerio";
+import ifc from "../../core/interfaces/interfaces.js";
+import EngineParser from "./generic.js";
 
-DuckParser = class extends EngineParser {
+const DuckParser = class extends EngineParser {
     engineName = "duckduckgo";
     shortName = "DG"
     searchUri = "https://lite.duckduckgo.com/lite/?q=%s";
@@ -47,4 +47,4 @@ DuckParser = class extends EngineParser {
     }
 };
 
-module.exports = DuckParser;
+export default DuckParser;

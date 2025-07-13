@@ -1,8 +1,8 @@
-const fs = require("fs");
-const cheerio = require("cheerio");
-const ifc = require("../interfaces/interfaces.js");
+import fs from "fs";
+import * as cheerio from "cheerio";
+import ifc from "../../core/interfaces/interfaces.js";
 
-EngineParser = class {
+const EngineParser = class {
     engineName;
     searchUri;
 
@@ -183,4 +183,4 @@ EngineParser = class {
     }
 };
 
-module.exports = EngineParser;
+export default EngineParser;

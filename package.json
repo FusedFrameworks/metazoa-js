@@ -1,7 +1,30 @@
 {
-  "type": "commonjs",
+  "name": "metazoa-js",
+  "author": "benjamman <benjamman@proton.me>",
+  "version": "0.0.1",
+  "description": "Modular metasearch engine library",
+  "type": "module",
+  "main": "src/server/index.js",
+  "module": "src/server/index.js",
+  "license": "BSD-3-Clause",
+  "keywords": ["metasearch", "metaengine", "search", "engine", "library", "fetch"],
   "dependencies": {
     "cheerio": "^1.0.0",
     "dotenv": "^16.4.7"
-  }
+  },
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=10.2.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FusedFrameworks/metazoa-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FusedFrameworks/metazoa-js/issues"
+  },
+  "homepage": "https://github.com/FusedFrameworks/metazoa-js#readme"
 }
