@@ -17,7 +17,7 @@ function quickSanitize(inp) {
 
 function validateUrl(href) {
     try {
-        const nhref = this.quickSanitize(href.trim()).replace(/^http(s|):\/\//, "https://");
+        const nhref = href.trim().replace(/^http(s|):\/\//, "https://");
         return new URL(nhref.startsWith("https://") ? nhref : "https://"+nhref);
     } catch (e) {
         console.error("Metazoa.validateURL: Invalid URL:", href);

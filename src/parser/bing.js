@@ -1,10 +1,11 @@
 const cheerio = require("cheerio");
 const ifc = require("../interfaces/interfaces.js");
+const security = require("../security/security.js");
 
 BingParser = class extends EngineParser {
     engineName = "bing";
     shortName = "BN";
-    searchUri = "https://www.bing.com/search?q=%s";
+    searchUri = "https://www.bing.com/search?go=Search&q=%s";
     imageSearchUri="https://www.bing.com/images/search?q=%s&form=HDRSC3&first=1"
     static features = [
         "text",
@@ -17,7 +18,20 @@ BingParser = class extends EngineParser {
         this.features = BingParser.features;
     }
 
-    parseText(htm) {
+    async _followClick(clickHref) {
+        const html = await fetch(decodeURIComponent(clickHref)).then(r => r.text());
+        const href = html.match(/u \= \"https\:\/\/[^"]+\"\;/)?.[0]?.slice(5, -2);
+        if (!href) {
+            console.error("Metazoa.BingParser._followClick: Error: Did not find valid match for href");
+            return clickHref;
+        }
+        if (!security.validateUrl(href)) {
+            return clickHref;
+        }
+        return href;
+    }
+
+    async parseText(htm) {
         const $ = cheerio.load(htm);
         const rl = $("ol#b_results li.b_algo");
         const r = [];
@@ -29,6 +43,7 @@ BingParser = class extends EngineParser {
             const dsc = e.find("p").text().trim();
 
             if (a.length) {
+
                 const href = a.attr("href");
                 const ttl = a.text().trim();
 
@@ -38,8 +53,17 @@ BingParser = class extends EngineParser {
                 r.push(tr);
             }
         });
+        
+        const finalResults = await Promise.all(r.map(async (article) => {
+            return new Promise((resolve, reject) => {
+                setTimeout(async () => {
+                    article.href = await this._followClick(article.href);
+                    resolve(article);
+                },Math.random()*500);
+            });
+        }));
 
-        return r;
+        return finalResults;
     }
 
     parseImages(htm) {
@@ -73,7 +97,7 @@ BingParser = class extends EngineParser {
     }
 
     getSuggestions(q) {
-        console.log(`Metazoa.BingParser.getSuggestions: Fetching suggestions from ${this.engineName} for: "${q}"`);
+        //console.log(`Metazoa.BingParser.getSuggestions: Fetching suggestions from ${this.engineName} for: "${q}"`);
         // Bing telemetry, unfortunately it's necessary.
         // I do believe CVID stands for "Client Visitor ID"
         // And it should be able to be regenerated at will.
@@ -87,7 +111,7 @@ BingParser = class extends EngineParser {
                 // We will need to preserve multi-lang support in the future.
                 const cq = d[i].q.replace(/[^\x20-\x7E]/g, '');
                 if (d[i].q === q) {
-                    console.log(`Metazoa.BingParser.getSuggestions: Suggestion ${i} from ${this.engineName} same as input "${q}". Omitting`);
+                    //console.log(`Metazoa.BingParser.getSuggestions: Suggestion ${i} from ${this.engineName} same as input "${q}". Omitting`);
                     continue;
                 }
                 s.push({

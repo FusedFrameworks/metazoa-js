@@ -16,13 +16,13 @@ BraveParser = class extends EngineParser {
     }
 
     getSuggestions(q) {
-        console.log(`Metazoa.BraveParser.getSuggestions: Fetching suggestions from ${this.engineName} for: "${q}"`);
+        //console.log(`Metazoa.BraveParser.getSuggestions: Fetching suggestions from ${this.engineName} for: "${q}"`);
         return fetch(this.suggestUri.replace("%s", q)).then(d => d.json())
         .then(d => {
             const s = [];
             for (const i in d[1]) {
                 if (d[1][i].q === q) {
-                    console.log(`Metazoa.BraveParser.getSuggestions: Suggestion ${i} from ${this.engineName} same as input "${q}". Omitting`);
+                    //console.log(`Metazoa.BraveParser.getSuggestions: Suggestion ${i} from ${this.engineName} same as input "${q}". Omitting`);
                     continue;
                 }
                 s.push({

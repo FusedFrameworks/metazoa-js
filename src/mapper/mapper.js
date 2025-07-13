@@ -14,15 +14,32 @@ function combineArticles(resArr) {
         });
     });
 
-    const combArr = Array.from(combMap.values());
-    combArr.sort((a,b) => {
+    const sort = Array.from(combMap.values());
+    //combArr.forEach(r => {
+    //    const places = s.e.map(e => +e.place);
+    //    
+    //    // Remove a single outlier if it skews the average significantly
+    //    let filteredPlaces = [...places];
+    //    if ((weights?.removeOutlier ?? true) && places.length >= 4) {
+    //        const mean = places.reduce((a, b) => a + b, 0) / places.length;
+    //        const stdev = Math.sqrt(places.map(p => Math.pow(p - mean, 2)).reduce((a, b) => a + b, 0) / places.length);
+    //    
+    //        const outliers = places.filter(p => Math.abs(p - mean) > stdev * 1.5);
+    //        if (outliers.length === 1) {
+    //            filteredPlaces = places.filter(p => p !== outliers[0]);
+    //        }
+    //    }
+    //    
+    //    const avgPlace = (1 + filteredPlaces.reduce((o, c) => o + c, 0) / filteredPlaces.length) * (weights?.avg ?? 1);
+    //});
+    sort.sort((a,b) => {
         const aPlacement = Object.values(a.engines);
         const avgA = aPlacement.reduce((sum, val) => sum + val, 0) / aPlacement.length;
         const bPlacement = Object.values(b.engines);
         const avgB = bPlacement.reduce((sum, val) => sum + val, 0) / bPlacement.length;
-        return avgA - avgB;
+        return (avgA - avgB) - (Object.entries(a.engines).length - Object.entries(b.engines).length);
     });
-    return combArr;
+    return sort;
 }
 
 function combineSuggestions(sugArr, weights) {

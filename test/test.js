@@ -69,7 +69,7 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
             console.log("\n");
             break;
         default:
-            const r = await new Metazoa.TextSearch().get(queries);
+            const r = await new Metazoa.TextSearch().get(queries.q);
             const mpad = (r.length-1).toString().length;
             const margin = 3;
             for (let i = r.length-1; i >= 0; i--) {

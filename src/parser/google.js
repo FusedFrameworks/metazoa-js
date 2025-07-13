@@ -23,7 +23,7 @@ GoogleParser = class extends EngineParser {
         const $ = cheerio.load(htm);
 
         // BREAKS CACHING AND USERAGENT
-        (async () => {
+        /*(async () => {
         const queries = {};
         const fa = $("a");
         if (fa.text().match(/click here/i)) {
@@ -34,7 +34,7 @@ GoogleParser = class extends EngineParser {
             //console.log(queries)
             //console.log(htm)
         }
-        })();
+        })();*/
 
         const r = [];
         
