@@ -69,7 +69,7 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
             console.log("\n");
             break;
         default:
-            const r = await new Metazoa.TextSearch().get(queries.q);
+            const r = await new Metazoa.TextSearch(["bing","duckduckgo","brave"]).get(queries.q);
             const mpad = (r.length-1).toString().length;
             const margin = 3;
             for (let i = r.length-1; i >= 0; i--) {
@@ -78,7 +78,12 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
                 const space = ' '.repeat(margin+mpad);
                 console.log(`${i+1}.${' '.repeat(margin-pad)} \u001b[32m${tr.title}\u001b[0m`);
                 console.log(`${space}\u001b[0;34m${tr.href}\u001b[0m`); 
-                console.log(`${space}${splitAndLimitLines(tr.description).replace(/\n/g, "\n"+space)}`);
+                console.log(`${space}${
+                        splitAndLimitLines(
+                            tr.description.replace(/\<(\/|)strong\>/gi,'')
+                        )
+                        .replace(/\n/g, "\n"+space)
+                }`);
                 const engie = Object.entries(tr.engines).map(e => `[${e[0].charAt(0).toUpperCase()}${e[1]}]`).join(' - ');
                 console.log(`${space}\u001b[1;37m${engie}\u001b[0m`);
                 console.log("\n");

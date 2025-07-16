@@ -43,7 +43,7 @@ const DuckParser = class extends EngineParser {
             r.push(tr);
         });
 
-        return r.reverse(); // Reverse order to match PHP implementation.
+        return r.reverse();
     }
 };
 

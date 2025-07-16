@@ -1,5 +1,7 @@
 import Metazoa from "../core/index.js";
 import * as scrapers from "./scrapers/scrapers.js";
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 Metazoa.parsers = scrapers;
 

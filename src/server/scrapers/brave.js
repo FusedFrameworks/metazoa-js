@@ -15,6 +15,32 @@ const BraveParser = class extends EngineParser {
         this.features = BraveParser.features;
     }
 
+    async getText(q) {
+        const params = new URLSearchParams({ q });
+        const response = await fetch(`https://api.search.brave.com/res/v1/web/search?${params}`, {
+          method: 'get',
+          headers: {
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip',
+            'x-subscription-token': process.env.BRAVE_API_KEY,
+          },
+        });
+        return {
+            parse: async () => this.parseResults(await response.json())
+        };
+    }
+
+    parseResults(results) {
+        // I'm discarding rivers of information here
+        // This could be so much better. My data structures just aren't good enough
+        return results.web.results.map((result,index) => {
+            let article = new ifc.TextArticle(result.url, result.title);
+            article.addDescription(result.description, this.engineName);
+            article.addEngine("brave", index);
+            return article;
+        });
+    }
+
     getSuggestions(q) {
         //console.log(`Metazoa.BraveParser.getSuggestions: Fetching suggestions from ${this.engineName} for: "${q}"`);
         return fetch(this.suggestUri.replace("%s", q)).then(d => d.json())

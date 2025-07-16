@@ -45,7 +45,8 @@ class Article {
     }
 
     addDescription(d, e) {
-        d = security.quickSanitize(d);
+        // dumb way of doing this I know. I'll fix
+        d = e === "brave" ? d : security.quickSanitize(d);
         if (!this.description) {
             this.description = d;
             this.descriptor = e;
