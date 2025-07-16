@@ -1,7 +1,7 @@
 {
   "name": "metazoa-js",
   "author": "benjamman <benjamman@proton.me>",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Modular metasearch engine library",
   "type": "module",
   "main": "src/server/index.js",
