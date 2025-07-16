@@ -105,7 +105,8 @@ const BingParser = class extends EngineParser {
         if (!this.cvid) this.cvid = this.genCVID();
         return fetch(this.genSuggestUri(q)).then(d => d.json())
         .then(dat => {
-            const d = dat.s;
+            const d = dat?.s;
+            if (!d) return [];
             const s = [];
             for (const i in d) {
                 // Remove non-ascii characters, for now.

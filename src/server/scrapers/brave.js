@@ -20,6 +20,7 @@ const BraveParser = class extends EngineParser {
         return fetch(this.suggestUri.replace("%s", q)).then(d => d.json())
         .then(d => {
             const s = [];
+            if (!d?.[1]) return [];
             for (const i in d[1]) {
                 if (d[1][i].q === q) {
                     //console.log(`Metazoa.BraveParser.getSuggestions: Suggestion ${i} from ${this.engineName} same as input "${q}". Omitting`);
