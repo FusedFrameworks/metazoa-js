@@ -2,6 +2,7 @@ import * as cheerio from "cheerio";
 import ifc from "../../core/interfaces/interfaces.js";
 import * as security from "../../core/utils/security.js";
 import EngineParser from "./generic.js";
+import findFavicon from "../../core/services/favicon.js";
 
 const BingParser = class extends EngineParser {
     engineName = "bing";
@@ -59,6 +60,7 @@ const BingParser = class extends EngineParser {
             return new Promise((resolve, reject) => {
                 setTimeout(async () => {
                     article.href = await this._followClick(article.href);
+                    article.icon = findFavicon(new URL(article.href).hostname);
                     resolve(article);
                 },Math.random()*500);
             });

@@ -40,7 +40,7 @@ const EngineParser = class {
         if (typeof query !== "string") {
             throw new Error(`Metazoa.EngineParser.getText: Query is not a string. Invalid type: ${typeof query}. ${String(query)}`);
         }
-        const q = encodeURIComponent(query.toLowerCase());
+        const q = /*encodeURIComponent(*/query.toLowerCase()/*);*/
 
         const nocache = !!options.nocache ?? this.getTextOptionsDefaults.nocache;
         const recache = !!options.recache ?? this.getTextOptionsDefaults.recache;

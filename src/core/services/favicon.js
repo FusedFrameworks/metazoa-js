@@ -22,6 +22,7 @@ function findFavicon(domain) {
             return defaultFavicon;
         }
     }
+    if (process.env.FAVICON_API) return `${process.env.FAVICON_API}/${domain}`;
     return `https://icons.duckduckgo.com/ip3/${domain}.ico`;
 }
 
