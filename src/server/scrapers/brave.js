@@ -16,7 +16,7 @@ const BraveParser = class extends EngineParser {
     }
 
     async getText(q) {
-        const params = new URLSearchParams({ q });
+        const params = new URLSearchParams({ q, text_decorations: "false" });
         const response = await fetch(`https://api.search.brave.com/res/v1/web/search?${params}`, {
           method: 'get',
           headers: {
@@ -36,7 +36,7 @@ const BraveParser = class extends EngineParser {
         return results.web.results.map((result,index) => {
             let article = new ifc.TextArticle(result.url, result.title);
             article.addDescription(result.description, this.engineName);
-            article.addEngine("brave", index);
+            article.addEngine("brave", index+1);
             return article;
         });
     }

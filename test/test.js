@@ -79,12 +79,10 @@ function splitAndLimitLines(str, maxCharsPerLine = 64, maxLines = 3) {
                 console.log(`${i+1}.${' '.repeat(margin-pad)} \u001b[32m${tr.title}\u001b[0m`);
                 console.log(`${space}\u001b[0;34m${tr.href}\u001b[0m`); 
                 console.log(`${space}${
-                        splitAndLimitLines(
-                            tr.description.replace(/\<(\/|)strong\>/gi,'')
-                        )
+                        splitAndLimitLines(tr.description)
                         .replace(/\n/g, "\n"+space)
                 }`);
-                const engie = Object.entries(tr.engines).map(e => `[${e[0].charAt(0).toUpperCase()}${e[1]}]`).join(' - ');
+                const engie = Object.entries(tr.engines).map(e => `[${e[0].charAt(0).toUpperCase()}${e[0].charAt(1).toUpperCase()}${e[1]}]`).join(' - ');
                 console.log(`${space}\u001b[1;37m${engie}\u001b[0m`);
                 console.log("\n");
             }
