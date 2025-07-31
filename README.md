@@ -9,10 +9,10 @@ This is the JS library for Metazoa. When used with Node/Bun it can scrape and pa
 - [x] Basic search suggestions
 - [ ] DB indexing (cache)
 - [ ] Bangs
-    - [ ] DuckDuckGo Bangs
-    - [ ] Extended Bangs
-    - [ ] Bang overrides
-    - [ ] Bands in search suggestions?
+    - [ ] DuckDuckGo !Bangs
+    - [ ] Extended !Bangs
+    - [ ] !Bang overrides
+    - [ ] !Bangs in search suggestions?
 - [ ] Filters
     - [ ] Malware filter
     - [ ] NSFW filter
